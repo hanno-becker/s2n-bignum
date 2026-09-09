@@ -355,52 +355,52 @@ let ASSIGNS_BYTES_ASWORD = prove
   ASM_REWRITE_TAC[ARITH_RULE `MIN a b = if b <= a then b else a`]);;
 
 let ASSIGNS_BYTES8 = prove
- (`forall a. ASSIGNS (bytes8 a) = ASSIGNS(bytes(a,1))`,
+ (`forall (a:A word). ASSIGNS (bytes8 a) = ASSIGNS(bytes(a,1))`,
   GEN_TAC THEN REWRITE_TAC[bytes8] THEN
   MATCH_MP_TAC ASSIGNS_BYTES_ASWORD THEN
   CONV_TAC(ONCE_DEPTH_CONV DIMINDEX_CONV) THEN
   CONV_TAC NUM_REDUCE_CONV);;
 
 let ASSIGNS_BYTES16 = prove
- (`forall a. ASSIGNS (bytes16 a) = ASSIGNS(bytes(a,2))`,
+ (`forall (a:A word). ASSIGNS (bytes16 a) = ASSIGNS(bytes(a,2))`,
   GEN_TAC THEN REWRITE_TAC[bytes16] THEN
   MATCH_MP_TAC ASSIGNS_BYTES_ASWORD THEN
   CONV_TAC(ONCE_DEPTH_CONV DIMINDEX_CONV) THEN
   CONV_TAC NUM_REDUCE_CONV);;
 
 let ASSIGNS_BYTES32 = prove
- (`forall a. ASSIGNS (bytes32 a) = ASSIGNS(bytes(a,4))`,
+ (`forall (a:A word). ASSIGNS (bytes32 a) = ASSIGNS(bytes(a,4))`,
   GEN_TAC THEN REWRITE_TAC[bytes32] THEN
   MATCH_MP_TAC ASSIGNS_BYTES_ASWORD THEN
   CONV_TAC(ONCE_DEPTH_CONV DIMINDEX_CONV) THEN
   CONV_TAC NUM_REDUCE_CONV);;
 
 let ASSIGNS_BYTES64 = prove
- (`forall a. ASSIGNS (bytes64 a) = ASSIGNS(bytes(a,8))`,
+ (`forall (a:A word). ASSIGNS (bytes64 a) = ASSIGNS(bytes(a,8))`,
   GEN_TAC THEN REWRITE_TAC[bytes64] THEN
   MATCH_MP_TAC ASSIGNS_BYTES_ASWORD THEN
   CONV_TAC(ONCE_DEPTH_CONV DIMINDEX_CONV) THEN
   CONV_TAC NUM_REDUCE_CONV);;
 
 let ASSIGNS_BYTES128 = prove
- (`forall a. ASSIGNS (bytes128 a) = ASSIGNS(bytes(a,16))`,
+ (`forall (a:A word). ASSIGNS (bytes128 a) = ASSIGNS(bytes(a,16))`,
   GEN_TAC THEN REWRITE_TAC[bytes128] THEN
   MATCH_MP_TAC ASSIGNS_BYTES_ASWORD THEN
   CONV_TAC(ONCE_DEPTH_CONV DIMINDEX_CONV) THEN
   CONV_TAC NUM_REDUCE_CONV);;
 
 let ASSIGNS_BYTES256 = prove
- (`forall a. ASSIGNS (bytes256 a) = ASSIGNS(bytes(a,32))`,
+ (`forall (a:A word). ASSIGNS (bytes256 a) = ASSIGNS(bytes(a,32))`,
   GEN_TAC THEN REWRITE_TAC[bytes256] THEN
   MATCH_MP_TAC ASSIGNS_BYTES_ASWORD THEN
   CONV_TAC(ONCE_DEPTH_CONV DIMINDEX_CONV) THEN
   CONV_TAC NUM_REDUCE_CONV);;
 
 let SUBSUMED_ASSIGNS_BYTES = prove
- (`forall a1 (a2:int64) k1 k2.
-        contained_modulo (2 EXP 64) (val a1,k1) (val a2,k2)
+ (`forall a1 (a2:N word) k1 k2.
+        contained_modulo (2 EXP dimindex(:N)) (val a1,k1) (val a2,k2)
         ==> ASSIGNS (bytes(a1,k1)) subsumed ASSIGNS (bytes(a2,k2))`,
-  REWRITE_TAC[GSYM DIMINDEX_64; CONTAINED_MODULO_WORDWISE] THEN
+  REWRITE_TAC[CONTAINED_MODULO_WORDWISE] THEN
   GEN_TAC THEN GEN_TAC THEN GEN_REWRITE_TAC I [SWAP_FORALL_THM] THEN
   GEN_TAC THEN MATCH_MP_TAC num_INDUCTION THEN
   REWRITE_TAC[ASSIGNS_BYTES; NUMSEG_CLAUSES_LT] THEN
@@ -2621,11 +2621,9 @@ let WBYTES_ALIAS_CONV =
   let pth8 = SYM BYTES8_WBYTES
   and pth16 = SYM BYTES16_WBYTES
   and pth32 = SYM BYTES32_WBYTES
-  and pth64 = SYM BYTES64_WBYTES
-  and t64 = `:64` in
+  and pth64 = SYM BYTES64_WBYTES in
   TRY_CONV (function
-  | Const("wbytes",Tyapp(_,[Tyapp(_,[M]);Tyapp(_,[_;Tyapp(_,[N])])]))
-    when M = t64 ->
+  | Const("wbytes",Tyapp(_,[Tyapp(_,[_]);Tyapp(_,[_;Tyapp(_,[N])])])) ->
     (match Num.int_of_num (dest_finty N) with
     | 8 -> pth8
     | 16 -> pth16
